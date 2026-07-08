@@ -10,6 +10,8 @@ test.describe('Inventory page - need to login already', () => {
         await loginAsStandardUser(loginPage);
     });
 
+    //hello
+
     test('Verify the inventory page loads after a successful login', async ({ inventoryPage }) => {
         await test.step('Verify the inventory page is displayed', async () => {
             await inventoryPage.assertInventoryPageVisible();
