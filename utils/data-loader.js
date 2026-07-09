@@ -28,6 +28,10 @@ export function getLoginData() {
     return loadTestData('login-data');
 }
 
+export function getInventoryData() {
+    return loadTestData('inventory-data');
+}
+
 
 // Example usage:
 // import { getLoginData } from '../helpers/dataLoader.js';
