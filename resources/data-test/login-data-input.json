@@ -1,0 +1,13 @@
+{
+    "loginUrl": "https://opensource-demo.orangehrmlive.com/web/index.php/auth/login",
+    "dashboardUrl": "https://www.saucedemo.com/inventory.html",
+    "validUsername": "standard_user",
+    "validPassword": "secret_sauce",
+    "invalidUsername": "Lena",
+    "invalidPassword": "Lena123",
+    "lockOutUsername":"locked_out_user",
+    "message": {
+        "invalidInfor": "Invalid credentials",
+        "requiredField": "Required"
+    }
+}

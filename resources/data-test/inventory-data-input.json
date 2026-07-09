@@ -1,0 +1,18 @@
+{
+    "listNumber": 6,
+    "productName": "Sauce Labs Backpack",
+    "secondaryProductName": "Sauce Labs Bike Light",
+    "item1": "sauce-labs-backpack",
+    "item2": "sauce-labs-bike-light",
+    "sortOptions": {
+        "az": "az",
+        "za": "za",
+        "lohi": "lohi",
+        "hilo": "hilo"
+    },
+    "cartCounts": {
+        "one": 1,
+        "two": 2
+    },
+    "directInventoryUrl": "https://www.saucedemo.com/inventory.html"
+}
