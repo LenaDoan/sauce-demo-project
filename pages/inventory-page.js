@@ -9,6 +9,7 @@ export class InventoryPage extends BasePage {
         this.inventoryItems = this.page.locator('.inventory_item');
         this.inventoryItemNames = this.page.locator('.inventory_item_name');
         this.inventoryItemPrices = this.page.locator('.inventory_item_price');
+        this.productImages = this.page.locator('.inventory_item_img');
         this.cartBadge = this.page.locator('.shopping_cart_badge');
         this.cartIcon = this.page.locator('.shopping_cart_link');
         this.menuButton = this.page.getByRole('button', { name: /open menu/i });
@@ -19,16 +20,24 @@ export class InventoryPage extends BasePage {
         this.aboutMenuOption = this.page.getByText('About');
     }
 
-    async addProductToCart(productSlug) {
-        await this.page.locator(`[data-test="add-to-cart-${productSlug}"]`).click();
+    async addProductToCart(item1) {
+        await this.page.locator(`[data-test="add-to-cart-${item1}"]`).click();
     }
 
-    async removeProductFromCart(productSlug) {
-        await this.page.locator(`[data-test="remove-${productSlug}"]`).click();
+    async removeProductFromCart(item1) {
+        await this.page.locator(`[data-test="remove-${item1}"]`).click();
     }
 
     async openProductDetail(productName) {
         await this.page.getByText(productName).click();
+    }
+
+    async openProductDetailFromImage() {
+        await this.productImages.first().click();
+    }
+
+    async getInventoryItemCount() {
+        return await this.inventoryItems.count();
     }
 
     async openCart() {
@@ -55,7 +64,8 @@ export class InventoryPage extends BasePage {
     }
 
     async assertProductsCount(expectedCount) {
-        await expect(this.inventoryItems).toHaveCount(expectedCount);
+        const actualCount = await this.getInventoryItemCount();
+        expect(actualCount, 'Expected the number of inventory products to match the test data').toBe(expectedCount);
     }
 
     async assertProductCardVisible(productName) {
@@ -97,8 +107,8 @@ export class InventoryPage extends BasePage {
         await expect(this.cartBadge).toHaveCount(0);
     }
 
-    async assertAddToCartButtonVisible(productSlug) {
-        await expect(this.page.locator(`[data-test="add-to-cart-${productSlug}"]`)).toBeVisible();
+    async assertAddToCartButtonVisible(item1) {
+        await expect(this.page.locator(`[data-test="add-to-cart-${item1}"]`)).toBeVisible();
     }
 
     async assertCartPageVisible() {

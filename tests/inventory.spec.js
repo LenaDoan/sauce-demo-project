@@ -1,13 +1,13 @@
-import { test } from '../fixtures/general-fixture.js';
+import { test, expect } from '../fixtures/general-fixture.js';
 
-async function loginAsStandardUser(loginPage) {
-    await loginPage.loginAction('standard_user', 'secret_sauce');
+async function loginAsStandardUser(loginPage, loginData) {
+    await loginPage.loginAction(loginData.validUsername, loginData.validPassword);
 }
 
 test.describe('Inventory page - need to login already', () => {
-    test.beforeEach('Open the Sauce Demo login page', async ({ page, loginPage }) => {
+    test.beforeEach('Open the Sauce Demo login page', async ({ page, loginPage, loginData }) => {
         await page.goto(process.env.BASE_URL);
-        await loginAsStandardUser(loginPage);
+        await loginAsStandardUser(loginPage, loginData);
     });
 
     //hello
@@ -18,21 +18,24 @@ test.describe('Inventory page - need to login already', () => {
         });
     });
 
-    test('Verify all products are displayed on the inventory page', async ({ inventoryPage }) => {
+    test('Verify all products are displayed on the inventory page', async ({ inventoryPage, inventoryData }) => {
         await test.step('Verify all inventory items are visible', async () => {
-            await inventoryPage.assertProductsCount(6);
+            const expectedCount = inventoryData.listNumber;
+            await inventoryPage.assertProductsCount(expectedCount);
+            const actualCount = await inventoryPage.getInventoryItemCount();
+            expect(actualCount).toBe(expectedCount);
         });
     });
 
-    test('Verify product card information is displayed', async ({ inventoryPage }) => {
+    test('Verify product card information is displayed', async ({ inventoryPage, inventoryData }) => {
         await test.step('Verify the backpack card contains the expected details', async () => {
-            await inventoryPage.assertProductCardVisible('Sauce Labs Backpack');
+            await inventoryPage.assertProductCardVisible(inventoryData.productName);
         });
     });
 
-    test('Sort products from A to Z', async ({ inventoryPage }) => {
+    test('Sort products from A to Z', async ({ inventoryPage, inventoryData }) => {
         await test.step('Apply the A to Z sort order', async () => {
-            await inventoryPage.sortProducts('az');
+            await inventoryPage.sortProducts(inventoryData.sortOptions.az);
         });
 
         await test.step('Verify the resulting item names are sorted alphabetically', async () => {
@@ -40,9 +43,9 @@ test.describe('Inventory page - need to login already', () => {
         });
     });
 
-    test('Sort products from Z to A', async ({ inventoryPage }) => {
+    test('Sort products from Z to A', async ({ inventoryPage, inventoryData }) => {
         await test.step('Apply the Z to A sort order', async () => {
-            await inventoryPage.sortProducts('za');
+            await inventoryPage.sortProducts(inventoryData.sortOptions.za);
         });
 
         await test.step('Verify the resulting item names are sorted reverse alphabetically', async () => {
@@ -50,9 +53,9 @@ test.describe('Inventory page - need to login already', () => {
         });
     });
 
-    test('Sort products by price from low to high', async ({ inventoryPage }) => {
+    test('Sort products by price from low to high', async ({ inventoryPage, inventoryData }) => {
         await test.step('Apply the low to high price sort order', async () => {
-            await inventoryPage.sortProducts('lohi');
+            await inventoryPage.sortProducts(inventoryData.sortOptions.lohi);
         });
 
         await test.step('Verify the prices are sorted from low to high', async () => {
@@ -60,9 +63,9 @@ test.describe('Inventory page - need to login already', () => {
         });
     });
 
-    test('Sort products by price from high to low', async ({ inventoryPage }) => {
+    test('Sort products by price from high to low', async ({ inventoryPage, inventoryData }) => {
         await test.step('Apply the high to low price sort order', async () => {
-            await inventoryPage.sortProducts('hilo');
+            await inventoryPage.sortProducts(inventoryData.sortOptions.hilo);
         });
 
         await test.step('Verify the prices are sorted from high to low', async () => {
@@ -70,35 +73,35 @@ test.describe('Inventory page - need to login already', () => {
         });
     });
 
-    test('Add one product to the cart from the inventory page', async ({ inventoryPage }) => {
+    test('Add one product to the cart from the inventory page', async ({ inventoryPage, inventoryData }) => {
         await test.step('Add the backpack to the cart', async () => {
-            await inventoryPage.addProductToCart('sauce-labs-backpack');
+            await inventoryPage.addProductToCart(inventoryData.item1);
         });
 
         await test.step('Verify the cart badge updates', async () => {
-            await inventoryPage.assertCartBadgeCount(1);
+            await inventoryPage.assertCartBadgeCount(inventoryData.cartCounts.one);
         });
     });
 
-    test('Add multiple products to the cart from the inventory page', async ({ inventoryPage }) => {
+    test('Add multiple products to the cart from the inventory page', async ({ inventoryPage, inventoryData }) => {
         await test.step('Add two products to the cart', async () => {
-            await inventoryPage.addProductToCart('sauce-labs-backpack');
-            await inventoryPage.addProductToCart('sauce-labs-bike-light');
+            await inventoryPage.addProductToCart(inventoryData.item1);
+            await inventoryPage.addProductToCart(inventoryData.item2);
         });
 
         await test.step('Verify the cart badge shows the correct item count', async () => {
-            await inventoryPage.assertCartBadgeCount(2);
+            await inventoryPage.assertCartBadgeCount(inventoryData.cartCounts.two);
         });
     });
 
-    test('Remove a product from the inventory page', async ({ inventoryPage }) => {
+    test('Remove a product from the inventory page', async ({ inventoryPage, inventoryData }) => {
         await test.step('Add a product and then remove it', async () => {
-            await inventoryPage.addProductToCart('sauce-labs-backpack');
-            await inventoryPage.removeProductFromCart('sauce-labs-backpack');
+            await inventoryPage.addProductToCart(inventoryData.item1);
+            await inventoryPage.removeProductFromCart(inventoryData.item1);
         });
 
         await test.step('Verify the remove action resets the button state', async () => {
-            await inventoryPage.assertAddToCartButtonVisible('sauce-labs-backpack');
+            await inventoryPage.assertAddToCartButtonVisible(inventoryData.item1);
         });
     });
 
@@ -112,23 +115,23 @@ test.describe('Inventory page - need to login already', () => {
         });
     });
 
-    test('Open a product detail page from the product name', async ({ inventoryPage }) => {
+    test('Open a product detail page from the product name', async ({ inventoryPage, inventoryData }) => {
         await test.step('Open the backpack detail page', async () => {
-            await inventoryPage.openProductDetail('Sauce Labs Backpack');
+            await inventoryPage.openProductDetail(inventoryData.productName);
         });
 
         await test.step('Verify the product detail page is displayed', async () => {
-            await inventoryPage.assertProductDetailPageVisible('Sauce Labs Backpack');
+            await inventoryPage.assertProductDetailPageVisible(inventoryData.productName);
         });
     });
 
-    test('Open a product detail page from the product image', async ({ inventoryPage }) => {
+    test('Open a product detail page from the product image', async ({ inventoryPage, inventoryData }) => {
         await test.step('Open the backpack detail page from the image', async () => {
-            await inventoryPage.page.locator('.inventory_item_img').first().click();
+            await inventoryPage.openProductDetailFromImage();
         });
 
         await test.step('Verify the product detail page is displayed', async () => {
-            await inventoryPage.assertProductDetailPageVisible('Sauce Labs Backpack');
+            await inventoryPage.assertProductDetailPageVisible(inventoryData.productName);
         });
     });
 
@@ -152,9 +155,9 @@ test.describe('Inventory page - need to login already', () => {
         });
     });
 
-    test('Reset app state clears the cart', async ({ inventoryPage }) => {
+    test('Reset app state clears the cart', async ({ inventoryPage, inventoryData }) => {
         await test.step('Add a product and reset the app state', async () => {
-            await inventoryPage.addProductToCart('sauce-labs-backpack');
+            await inventoryPage.addProductToCart(inventoryData.item1);
             await inventoryPage.openMenu();
             await inventoryPage.resetAppStateButton.click();
         });
@@ -165,9 +168,9 @@ test.describe('Inventory page - need to login already', () => {
     });
 });
 
-test('Accessing the inventory page without login redirects the user', async ({ inventoryPage, page }) => {
+test('Accessing the inventory page without login redirects the user', async ({ inventoryPage, page, inventoryData }) => {
     await test.step('Open the inventory URL directly', async () => {
-        await page.goto('https://www.saucedemo.com/inventory.html');
+        await page.goto(inventoryData.directInventoryUrl);
     });
 
     await test.step('Verify the user is redirected to the login experience', async () => {
