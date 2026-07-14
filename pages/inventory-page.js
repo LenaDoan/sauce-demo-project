@@ -21,11 +21,13 @@ export class InventoryPage extends BasePage {
     }
 
     async addProductToCart(item1) {
-        await this.page.locator(`[data-test="add-to-cart-${item1}"]`).click();
+        const addToCartButton = this.page.locator('.inventory_item').filter({ has: this.page.locator('.inventory_item_name', { hasText: item1 }) }).locator('[data-test^="add-to-cart-"]');
+        await addToCartButton.first().click();
     }
 
     async removeProductFromCart(item1) {
-        await this.page.locator(`[data-test="remove-${item1}"]`).click();
+        const removeButton = this.page.locator('.inventory_item').filter({ has: this.page.locator('.inventory_item_name', { hasText: item1 }) }).locator('[data-test^="remove-"]');
+        await removeButton.first().click();
     }
 
     async openProductDetail(productName) {

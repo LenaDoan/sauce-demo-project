@@ -2,8 +2,9 @@
     "listNumber": 6,
     "productName": "Sauce Labs Backpack",
     "secondaryProductName": "Sauce Labs Bike Light",
-    "item1": "sauce-labs-backpack",
-    "item2": "sauce-labs-bike-light",
+    "item1": "Sauce Labs Backpack",
+    "item2": "Sauce Labs Bike Light",
+    "item3":"sauce-labs-backpack",
     "sortOptions": {
         "az": "az",
         "za": "za",
