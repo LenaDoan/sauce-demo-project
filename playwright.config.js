@@ -12,6 +12,7 @@ dotenv.config();
  */
 export default defineConfig({
   testDir: './tests',
+  globalSetup: './global-setup.js',
   //testMatch: ['**/*.test.js', '**/*.spec.js', '**/*-test.js', '**/*-spec.js'],
   /* Run tests in files in parallel */
   fullyParallel: false,
@@ -31,7 +32,8 @@ export default defineConfig({
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
     video: 'on-first-retry',
-    screenshot: 'only-on-failure'
+    screenshot: 'only-on-failure',
+    storageState: 'playwright/.auth/inventory-auth.json'
   },
 
   /* Configure projects for major browsers */

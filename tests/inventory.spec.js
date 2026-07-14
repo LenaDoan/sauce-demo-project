@@ -1,13 +1,13 @@
+import path from 'path';
 import { test, expect } from '../fixtures/general-fixture.js';
 
-async function loginAsStandardUser(loginPage, loginData) {
-    await loginPage.loginAction(loginData.validUsername, loginData.validPassword);
-}
+const authFile = path.join(process.cwd(), 'playwright/.auth/inventory-auth.json');
 
 test.describe('Inventory page - need to login already', () => {
-    test.beforeEach('Open the Sauce Demo login page', async ({ page, loginPage, loginData }) => {
-        await page.goto(process.env.BASE_URL);
-        await loginAsStandardUser(loginPage, loginData);
+    test.use({ storageState: authFile });
+
+    test.beforeEach('Open the Sauce Demo inventory page', async ({ page }) => {
+        await page.goto('https://www.saucedemo.com/inventory.html');
     });
 
     //hello
@@ -101,7 +101,7 @@ test.describe('Inventory page - need to login already', () => {
         });
 
         await test.step('Verify the remove action resets the button state', async () => {
-            await inventoryPage.assertAddToCartButtonVisible(inventoryData.item1);
+            await inventoryPage.assertAddToCartButtonVisible(inventoryData.item3);
         });
     });
 
