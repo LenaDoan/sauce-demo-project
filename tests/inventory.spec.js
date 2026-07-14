@@ -7,10 +7,8 @@ test.describe('Inventory page - need to login already', () => {
     test.use({ storageState: authFile });
 
     test.beforeEach('Open the Sauce Demo inventory page', async ({ page }) => {
-        await page.goto('https://www.saucedemo.com/inventory.html');
+        await page.goto(process.env.INVENTORY_URL);
     });
-
-    //hello
 
     test('Verify the inventory page loads after a successful login', async ({ inventoryPage }) => {
         await test.step('Verify the inventory page is displayed', async () => {
@@ -168,12 +166,15 @@ test.describe('Inventory page - need to login already', () => {
     });
 });
 
-test('Accessing the inventory page without login redirects the user', async ({ inventoryPage, page, inventoryData }) => {
-    await test.step('Open the inventory URL directly', async () => {
-        await page.goto(inventoryData.directInventoryUrl);
-    });
+test.describe('Inventory page - not loggin', () => {
+    test.use({ storageState: { cookies: [], origins: [] } });
+    test('Accessing the inventory page without login redirects the user', async ({ inventoryPage, page, inventoryData }) => {
+        await test.step('Open the inventory URL directly', async () => {
+            await page.goto(inventoryData.directInventoryUrl);
+        });
 
-    await test.step('Verify the user is redirected to the login experience', async () => {
-        await inventoryPage.assertLoginPageVisible();
+        await test.step('Verify the user is redirected to the login experience', async () => {
+            await inventoryPage.assertLoginPageVisible();
+        });
     });
 });
