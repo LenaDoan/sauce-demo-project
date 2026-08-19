@@ -1,5 +1,6 @@
 import { expect } from '@playwright/test';
 import { BasePage } from './base-page.js';
+import * as helper from '../utils/helper.js';
 
 export class InventoryPage extends BasePage {
     constructor(page) {
@@ -14,20 +15,26 @@ export class InventoryPage extends BasePage {
         this.cartIcon = this.page.locator('.shopping_cart_link');
         this.menuButton = this.page.getByRole('button', { name: /open menu/i });
         this.logoutButton = this.page.getByText('Logout');
-        this.sortDropdown = this.page.locator('select').first();
+        this.sortDropdown = this.page.getByTestId('product-sort-container');
         this.resetAppStateButton = this.page.getByText('Reset App State');
         this.allItemsMenuOption = this.page.getByText('All Items');
         this.aboutMenuOption = this.page.getByText('About');
+        this.items = this.page.getByTestId('inventory-item');
+        this.addToCartButtons = this.page.getByRole('button', { name: /add to cart/i });
+    }
+
+    async openInventoryPage() {
+        await this.page.goto('/inventory.html');
     }
 
     async addProductToCart(item1) {
-        const addToCartButton = this.page.locator('.inventory_item').filter({ has: this.page.locator('.inventory_item_name', { hasText: item1 }) }).locator('[data-test^="add-to-cart-"]');
-        await addToCartButton.first().click();
+        const addToCartButton = this.items.filter({ hasText: item1 }).getByRole('button', { name: /add to cart/i }).first();
+        await addToCartButton.click();
     }
 
     async removeProductFromCart(item1) {
-        const removeButton = this.page.locator('.inventory_item').filter({ has: this.page.locator('.inventory_item_name', { hasText: item1 }) }).locator('[data-test^="remove-"]');
-        await removeButton.first().click();
+        const removeButton = this.items.filter({  hasText: item1 }).getByRole('button', { name: /remove/i }).first();
+        await removeButton.click();
     }
 
     async openProductDetail(productName) {
@@ -60,15 +67,15 @@ export class InventoryPage extends BasePage {
         await this.sortDropdown.selectOption(optionValue);
     }
 
-    async assertInventoryPageVisible() {
-        await expect(this.page).toHaveURL(/inventory/);
-        await expect(this.pageTitle).toBeVisible();
-    }
+    // async assertInventoryPageVisible() {
+    //     await expect(this.page).toHaveURL(/inventory/);
+    //     await expect(this.pageTitle).toBeVisible();
+    // }
 
-    async assertProductsCount(expectedCount) {
-        const actualCount = await this.getInventoryItemCount();
-        expect(actualCount, 'Expected the number of inventory products to match the test data').toBe(expectedCount);
-    }
+    // async assertProductsCount(expectedCount) {
+    //     const actualCount = await this.getInventoryItemCount();
+    //     expect(actualCount, 'Expected the number of inventory products to match the test data').toBe(expectedCount);
+    // }
 
     async assertProductCardVisible(productName) {
         const card = this.inventoryItems.filter({ hasText: productName }).first();
@@ -79,25 +86,25 @@ export class InventoryPage extends BasePage {
 
     async assertItemNamesSortedAsc() {
         const names = (await this.inventoryItemNames.allTextContents()).map((name) => name.trim());
-        const sortedNames = [...names].sort((a, b) => a.localeCompare(b));
+        const sortedNames = helper.sortAToZString(names);
         expect(names).toEqual(sortedNames);
     }
 
     async assertItemNamesSortedDesc() {
         const names = (await this.inventoryItemNames.allTextContents()).map((name) => name.trim());
-        const sortedNames = [...names].sort((a, b) => b.localeCompare(a));
+        const sortedNames = helper.sortZToAString(names);
         expect(names).toEqual(sortedNames);
     }
 
     async assertPricesSortedAsc() {
         const prices = (await this.inventoryItemPrices.allTextContents()).map((price) => Number(price.replace('$', '').trim()));
-        const sortedPrices = [...prices].sort((a, b) => a - b);
+        const sortedPrices = helper.sortAToZNumber(prices);
         expect(prices).toEqual(sortedPrices);
     }
 
     async assertPricesSortedDesc() {
         const prices = (await this.inventoryItemPrices.allTextContents()).map((price) => Number(price.replace('$', '').trim()));
-        const sortedPrices = [...prices].sort((a, b) => b - a);
+        const sortedPrices = helper.sortZToANumber(prices);
         expect(prices).toEqual(sortedPrices);
     }
 
@@ -127,9 +134,5 @@ export class InventoryPage extends BasePage {
         await expect(this.aboutMenuOption).toBeVisible();
         await expect(this.logoutButton).toBeVisible();
         await expect(this.resetAppStateButton).toBeVisible();
-    }
-
-    async assertLoginPageVisible() {
-        await expect(this.page.getByPlaceholder('Username')).toBeVisible();
     }
 }

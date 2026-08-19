@@ -3,72 +3,24 @@ import { test, expect } from '../fixtures/general-fixture.js';
 
 const authFile = path.join(process.cwd(), 'playwright/.auth/inventory-auth.json');
 
-test.describe('Inventory page - need to login already', () => {
-    test.use({ storageState: authFile });
-
-    test.beforeEach('Open the Sauce Demo inventory page', async ({ page }) => {
-        await page.goto(process.env.INVENTORY_URL);
+test.describe('Verify UI of inventory page - Logged in', () => {
+    test.beforeEach('Open the Sauce Demo inventory page', async ({ inventoryPage }) => {
+        await inventoryPage.openInventoryPage();
     });
 
-    test('Verify the inventory page loads after a successful login', async ({ inventoryPage }) => {
-        await test.step('Verify the inventory page is displayed', async () => {
-            await inventoryPage.assertInventoryPageVisible();
-        });
+    test('Verify the inventory page loads after a successful login', async ({ inventoryPage, page }) => {
+            await expect(page).toHaveURL(/inventory.html/);
+            await expect(inventoryPage.pageTitle).toBeVisible();
     });
 
     test('Verify all products are displayed on the inventory page', async ({ inventoryPage, inventoryData }) => {
-        await test.step('Verify all inventory items are visible', async () => {
-            const expectedCount = inventoryData.listNumber;
-            await inventoryPage.assertProductsCount(expectedCount);
+        //Compare total number of Items on the inventory page
             const actualCount = await inventoryPage.getInventoryItemCount();
-            expect(actualCount).toBe(expectedCount);
-        });
+            await expect(actualCount).toBe(inventoryData.listNumber);
     });
 
     test('Verify product card information is displayed', async ({ inventoryPage, inventoryData }) => {
-        await test.step('Verify the backpack card contains the expected details', async () => {
             await inventoryPage.assertProductCardVisible(inventoryData.productName);
-        });
-    });
-
-    test('Sort products from A to Z', async ({ inventoryPage, inventoryData }) => {
-        await test.step('Apply the A to Z sort order', async () => {
-            await inventoryPage.sortProducts(inventoryData.sortOptions.az);
-        });
-
-        await test.step('Verify the resulting item names are sorted alphabetically', async () => {
-            await inventoryPage.assertItemNamesSortedAsc();
-        });
-    });
-
-    test('Sort products from Z to A', async ({ inventoryPage, inventoryData }) => {
-        await test.step('Apply the Z to A sort order', async () => {
-            await inventoryPage.sortProducts(inventoryData.sortOptions.za);
-        });
-
-        await test.step('Verify the resulting item names are sorted reverse alphabetically', async () => {
-            await inventoryPage.assertItemNamesSortedDesc();
-        });
-    });
-
-    test('Sort products by price from low to high', async ({ inventoryPage, inventoryData }) => {
-        await test.step('Apply the low to high price sort order', async () => {
-            await inventoryPage.sortProducts(inventoryData.sortOptions.lohi);
-        });
-
-        await test.step('Verify the prices are sorted from low to high', async () => {
-            await inventoryPage.assertPricesSortedAsc();
-        });
-    });
-
-    test('Sort products by price from high to low', async ({ inventoryPage, inventoryData }) => {
-        await test.step('Apply the high to low price sort order', async () => {
-            await inventoryPage.sortProducts(inventoryData.sortOptions.hilo);
-        });
-
-        await test.step('Verify the prices are sorted from high to low', async () => {
-            await inventoryPage.assertPricesSortedDesc();
-        });
     });
 
     test('Add one product to the cart from the inventory page', async ({ inventoryPage, inventoryData }) => {
@@ -143,13 +95,14 @@ test.describe('Inventory page - need to login already', () => {
         });
     });
 
-    test('Logout from the inventory page', async ({ inventoryPage }) => {
+    test('Logout from the inventory page', async ({ inventoryPage, loginPage, page }) => {
         await test.step('Log out from the application', async () => {
             await inventoryPage.logout();
         });
 
         await test.step('Verify the user is redirected to the login page', async () => {
-            await inventoryPage.assertLoginPageVisible();
+            await expect(loginPage.username).toBeVisible();
+            await expect(page).toHaveURL('/');
         });
     });
 
@@ -166,15 +119,61 @@ test.describe('Inventory page - need to login already', () => {
     });
 });
 
+test.describe('Sorting cases - Logged in', () => {
+    test.beforeEach('Open the Sauce Demo inventory page', async ({ inventoryPage }) => {
+        await inventoryPage.openInventoryPage();
+    });
+    test('Sort products from A to Z', async ({ inventoryPage, inventoryData }) => {
+        await test.step('Apply the A to Z sort order', async () => {
+            await inventoryPage.sortProducts(inventoryData.sortOptions.az);
+        });
+
+        await test.step('Verify the resulting item names are sorted alphabetically', async () => {
+            await inventoryPage.assertItemNamesSortedAsc();
+        });
+    });
+
+    test('Sort products from Z to A', async ({ inventoryPage, inventoryData }) => {
+        await test.step('Apply the Z to A sort order', async () => {
+            await inventoryPage.sortProducts(inventoryData.sortOptions.za);
+        });
+
+        await test.step('Verify the resulting item names are sorted reverse alphabetically', async () => {
+            await inventoryPage.assertItemNamesSortedDesc();
+        });
+    });
+
+    test('Sort products by price from low to high', async ({ inventoryPage, inventoryData }) => {
+        await test.step('Apply the low to high price sort order', async () => {
+            await inventoryPage.sortProducts(inventoryData.sortOptions.lohi);
+        });
+
+        await test.step('Verify the prices are sorted from low to high', async () => {
+            await inventoryPage.assertPricesSortedAsc();
+        });
+    });
+
+    test('Sort products by price from high to low', async ({ inventoryPage, inventoryData }) => {
+        await test.step('Apply the high to low price sort order', async () => {
+            await inventoryPage.sortProducts(inventoryData.sortOptions.hilo);
+        });
+
+        await test.step('Verify the prices are sorted from high to low', async () => {
+            await inventoryPage.assertPricesSortedDesc();
+        });
+    });
+});
+
 test.describe('Inventory page - not loggin', () => {
     test.use({ storageState: { cookies: [], origins: [] } });
-    test('Accessing the inventory page without login redirects the user', async ({ inventoryPage, page, inventoryData }) => {
+    test('Accessing the inventory page without login, redirects to the login page', async ({ inventoryPage, inventoryData, loginPage, page }) => {
         await test.step('Open the inventory URL directly', async () => {
-            await page.goto(inventoryData.directInventoryUrl);
+            await inventoryPage.openInventoryPage();
         });
 
         await test.step('Verify the user is redirected to the login experience', async () => {
-            await inventoryPage.assertLoginPageVisible();
+            await expect(loginPage.username).toBeVisible();
+            await expect(page).toHaveURL('/');
         });
     });
 });
