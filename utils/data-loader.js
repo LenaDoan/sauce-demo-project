@@ -1,20 +1,10 @@
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 
-// Load test data from JSON file
+//Use for data test has the same name structure, like login-input.json and inventory-input.json
 export function loadTestData(fileName) {
     try {
-        const candidates = [
-            join(process.cwd(), 'resources', 'data-test', `${fileName}.json`),
-            join(process.cwd(), 'resources', 'data-test', `${fileName}-input.json`)
-        ];
-
-        const filePath = candidates.find((candidate) => existsSync(candidate));
-
-        if (!filePath) {
-            throw new Error(`Test data file not found for ${fileName}`);
-        }
-
+        const filePath = join(process.cwd(), 'resources', 'data-test', `${fileName}-input.json`)
         const data = readFileSync(filePath, 'utf-8');
         return JSON.parse(data);
     } catch (error) {
@@ -31,9 +21,3 @@ export function getLoginData() {
 export function getInventoryData() {
     return loadTestData('inventory-data');
 }
-
-
-// Example usage:
-// import { getLoginData } from '../helpers/dataLoader.js';
-// const loginData = getLoginData();
-// const users = loginData.users;
