@@ -9,9 +9,9 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     env:
-      BASE_URL: ${{ secrets.BASE_URL }}
-      INVENTORY_URL: ${{ secrets.INVENTORY_URL }}
-      USER_NAME: ${{ secrets.USER_NAME }}
+      BASE_URL: ${{ vars.BASE_URL }}
+      INVENTORY_URL: ${{ vars.INVENTORY_URL }}
+      USER_NAME: ${{ vars.USER_NAME }}
       PASSWORD: ${{ secrets.PASSWORD }}
     steps:
       - uses: actions/checkout@v4
