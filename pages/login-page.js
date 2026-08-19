@@ -10,7 +10,7 @@ export class LoginPage extends BasePage {
         this.password = this.page.getByPlaceholder('Password');
         this.loginBtn = this.page.getByRole('button', { name: 'Login' });
         this.productsTitle = this.page.getByText('Products');
-        this.errorMessage = this.page.locator('[data-test="error"]');
+        this.errorMessage = this.page.getByTestId('error');
     }
 
     //Method
@@ -18,15 +18,5 @@ export class LoginPage extends BasePage {
         await this.username.fill(username);
         await this.password.fill(pass);
         await this.loginBtn.click();
-    }
-
-    async assertInventoryPageVisible(expectedUrl) {
-        await expect(this.page).toHaveURL(expectedUrl);
-        await expect(this.productsTitle).toBeVisible();
-    }
-
-    async assertErrorMessageVisible(expectedText) {
-        await expect(this.errorMessage).toContainText(expectedText);
-        await expect(this.username).toBeVisible();
     }
 }

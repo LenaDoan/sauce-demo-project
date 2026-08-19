@@ -1,17 +1,20 @@
 import { test, expect } from "../fixtures/general-fixture.js";
 
+test.use({storageState: {cookies: [], origins: []}});
+
 test.beforeEach('Navigate to the login page', async ({ page }) => {
-    await page.goto(process.env.BASE_URL);
+    await page.goto('/');
 });
 
 test.describe('Happy path: Login success', () => {
-    test('Login successfully with valid user', async ({ loginPage, loginData }) => {
+    test('Login successfully with valid user', async ({ loginPage, loginData, page }) => {
         await test.step('Login with valid credentials', async () => {
             await loginPage.loginAction(loginData.validUsername, loginData.validPassword);
         });
 
         await test.step('Verify the user is redirected to the inventory page', async () => {
-            await loginPage.assertInventoryPageVisible(loginData.dashboardUrl);
+            await expect(page).toHaveURL(loginData.dashboardUrl);
+            await expect(loginPage.productsTitle).toBeVisible();
         });
     });
 });
@@ -23,7 +26,7 @@ test.describe('Login with invalid credentials', () => {
         });
 
         await test.step('Verify the error message is displayed', async () => {
-            await loginPage.assertErrorMessageVisible(/Epic sadface/i);
+            await expect(loginPage.errorMessage).toContainText(loginData.errorMessage.invalidInformation);
         });
     });
 });
@@ -35,7 +38,7 @@ test.describe('Login with unusual account', () => {
         });
 
         await test.step('Verify the locked out message is displayed', async () => {
-            await loginPage.assertErrorMessageVisible(/locked out/i);
+            await expect(loginPage.errorMessage).toContainText(loginData.errorMessage.lockedOut);
         });
     });
 });
