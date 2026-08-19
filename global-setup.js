@@ -1,6 +1,6 @@
 import path from 'path';
 import { mkdir } from 'fs/promises';
-import { chromium } from '@playwright/test';
+import { chromium, expect } from '@playwright/test';
 import { LoginPage } from './pages/login-page.js';
 import { getLoginData } from './utils/data-loader.js';
 
@@ -16,7 +16,8 @@ async function globalSetup() {
 
   await page.goto(process.env.BASE_URL);
   await loginPage.loginAction(loginData.validUsername, loginData.validPassword);
-  await loginPage.assertInventoryPageVisible(loginData.dashboardUrl);
+  await expect(page).toHaveURL(process.env.BASE_URL + '/inventory.html');
+  await expect(loginPage.productsTitle).toBeVisible()
   await context.storageState({ path: authFile });
   await browser.close();
 }
