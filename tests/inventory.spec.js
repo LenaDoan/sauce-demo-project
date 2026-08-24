@@ -1,8 +1,6 @@
 import path from 'path';
 import { test, expect } from '../fixtures/general-fixture.js';
 
-const authFile = path.join(process.cwd(), 'playwright/.auth/inventory-auth.json');
-
 test.describe('Verify UI of inventory page - Logged in', () => {
     test.beforeEach('Open the Sauce Demo inventory page', async ({ inventoryPage }) => {
         await inventoryPage.openInventoryPage();
@@ -13,45 +11,51 @@ test.describe('Verify UI of inventory page - Logged in', () => {
             await expect(inventoryPage.pageTitle).toBeVisible();
     });
 
-    test('Verify all products are displayed on the inventory page', async ({ inventoryPage, inventoryData }) => {
+    test('Verify the number of products displays correctly', async ({ inventoryPage, inventoryData }) => {
         //Compare total number of Items on the inventory page
             const actualCount = await inventoryPage.getInventoryItemCount();
             await expect(actualCount).toBe(inventoryData.listNumber);
     });
 
-    test('Verify product card information is displayed', async ({ inventoryPage, inventoryData }) => {
-            await inventoryPage.assertProductCardVisible(inventoryData.productName);
+    test('Verify a card includes the correct information', async ({ inventoryPage, inventoryData }) => {
+            const item = inventoryPage.getInventoryName(inventoryData.cardInformation.name);
+            await expect(item.card).toBeVisible();
+            await expect(item.name).toHaveText(inventoryData.cardInformation.name);
+            await expect(item.price).toHaveText(inventoryData.cardInformation.price);
+            await expect(item.description).toHaveText(inventoryData.cardInformation.description);
+            await expect(item.addToCartButton).toHaveText(/add to cart/i);
     });
 
     test('Add one product to the cart from the inventory page', async ({ inventoryPage, inventoryData }) => {
         await test.step('Add the backpack to the cart', async () => {
-            await inventoryPage.addProductToCart(inventoryData.item1);
+            await inventoryPage.addProductToCart(inventoryData.cardInformation.name);
         });
 
         await test.step('Verify the cart badge updates', async () => {
-            await inventoryPage.assertCartBadgeCount(inventoryData.cartCounts.one);
+            await expect(inventoryPage.cartBadge).toHaveText('1');
         });
     });
 
     test('Add multiple products to the cart from the inventory page', async ({ inventoryPage, inventoryData }) => {
         await test.step('Add two products to the cart', async () => {
-            await inventoryPage.addProductToCart(inventoryData.item1);
-            await inventoryPage.addProductToCart(inventoryData.item2);
+            await inventoryPage.addProductToCart(inventoryData.cardInformation.name);
+            await inventoryPage.addProductToCart(inventoryData.cardInformation2.name);
         });
 
         await test.step('Verify the cart badge shows the correct item count', async () => {
-            await inventoryPage.assertCartBadgeCount(inventoryData.cartCounts.two);
+            await expect(inventoryPage.cartBadge).toHaveText('2');
         });
     });
 
     test('Remove a product from the inventory page', async ({ inventoryPage, inventoryData }) => {
         await test.step('Add a product and then remove it', async () => {
-            await inventoryPage.addProductToCart(inventoryData.item1);
-            await inventoryPage.removeProductFromCart(inventoryData.item1);
+            await inventoryPage.addProductToCart(inventoryData.cardInformation.name);
+            await inventoryPage.removeProductFromCart(inventoryData.cardInformation.name);
         });
 
         await test.step('Verify the remove action resets the button state', async () => {
-            await inventoryPage.assertAddToCartButtonVisible(inventoryData.item3);
+            const item = inventoryPage.getInventoryName(inventoryData.cardInformation.name);
+            await expect(item.addToCartButton).toBeVisible();
         });
     });
 

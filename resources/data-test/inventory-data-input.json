@@ -11,9 +11,35 @@
         "lohi": "lohi",
         "hilo": "hilo"
     },
-    "cartCounts": {
-        "one": 1,
-        "two": 2
+    "cardInformation": {
+        "name": "Sauce Labs Backpack",
+        "price": "$29.99",
+        "description": "carry.allTheThings() with the sleek, streamlined Sly Pack that melds uncompromising style with unequaled laptop and tablet protection."
+    },
+    "cardInformation2": {
+        "name": "Sauce Labs Bike Light",
+        "price": "$9.99",
+        "description": "A red light isn't the only thing you'll see in the dark."
+    }, 
+    "cardInformation3": {
+        "name": "Sauce Labs Bolt T-Shirt",
+        "price": "$15.99",
+        "description": "Get your testing superhero on with the Sauce Labs bolt T-shirt. From American Apparel, 100% ringspun combed cotton."
+    },
+    "cardInformation4": {
+        "name": "Sauce Labs Fleece Jacket",
+        "price": "$49.99",
+        "description": "It's not every day that you come across a mid-layer fleece jacket capable of handling everything from a relaxing day outdoors to a busy day at the office."
+    },
+    "cardInformation5": {
+        "name": "Sauce Labs Onesie",
+        "price": "$7.99",
+        "description": "From the velcro straps on the sleeves to the cross-over design, this classic grey pullover is constructed with the same design and quality as the adult onesie."
+    },  
+    "cardInformation6": {
+        "name": "Test.allTheThings() T-Shirt (Red)",
+        "price": "$15.99",
+        "description": "This classic Sauce Labs t-shirt is perfect for everyday wear and fits like a glove."
     },
     "directInventoryUrl": "https://www.saucedemo.com/inventory.html"
 }

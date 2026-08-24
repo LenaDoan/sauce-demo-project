@@ -67,21 +67,15 @@ export class InventoryPage extends BasePage {
         await this.sortDropdown.selectOption(optionValue);
     }
 
-    // async assertInventoryPageVisible() {
-    //     await expect(this.page).toHaveURL(/inventory/);
-    //     await expect(this.pageTitle).toBeVisible();
-    // }
-
-    // async assertProductsCount(expectedCount) {
-    //     const actualCount = await this.getInventoryItemCount();
-    //     expect(actualCount, 'Expected the number of inventory products to match the test data').toBe(expectedCount);
-    // }
-
-    async assertProductCardVisible(productName) {
-        const card = this.inventoryItems.filter({ hasText: productName }).first();
-        await expect(card.getByText(productName)).toBeVisible();
-        await expect(card.getByText(/Add to cart/i)).toBeVisible();
-        await expect(card.locator('.inventory_item_price')).toBeVisible();
+    getInventoryName(name){
+        const card = this.inventoryItems.filter({ hasText: name });
+        return {
+            card,
+            name: card.locator('.inventory_item_name'),
+            price: card.locator('.inventory_item_price'),
+            description: card.locator('.inventory_item_desc'),
+            addToCartButton: card.getByRole('button', { name: /add to cart/i }),
+        }
     }
 
     async assertItemNamesSortedAsc() {
@@ -108,16 +102,8 @@ export class InventoryPage extends BasePage {
         expect(prices).toEqual(sortedPrices);
     }
 
-    async assertCartBadgeCount(expectedCount) {
-        await expect(this.cartBadge).toHaveText(String(expectedCount));
-    }
-
     async assertCartBadgeHidden() {
         await expect(this.cartBadge).toHaveCount(0);
-    }
-
-    async assertAddToCartButtonVisible(item1) {
-        await expect(this.page.locator(`[data-test="add-to-cart-${item1}"]`)).toBeVisible();
     }
 
     async assertCartPageVisible() {
