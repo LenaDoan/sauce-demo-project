@@ -1,8 +1,12 @@
 {
     "base_url": "https://restful-booker.herokuapp.com",
+    "booking_url": "https://restful-booker.herokuapp.com/booking",
+    "auth_url": "https://restful-booker.herokuapp.com/auth",
     "login": {
         "username": "admin",
-        "password": "password123"
+        "password": "password123",
+        "invalid_username": "admin1",
+        "invalid_password": "password1234"
     },
     "createBooking": {
         "firstname": "Jim",
@@ -25,5 +29,9 @@
             "checkout": "2026-08-24"
         },
         "additionalneeds": "Breakfast"
+    },
+    "partialUpdateBooking": {
+        "firstname": "Bong",
+        "depositpaid": true
     }
 }

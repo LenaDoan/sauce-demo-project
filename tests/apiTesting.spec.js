@@ -2,8 +2,8 @@ import { test, expect } from '@playwright/test';
 import data from '../resources/data-test/api-data-input.json' with { type: 'json' };
 
 let token;
-test.beforeAll('Create token for user', async ({ request }) => {
-    const response = await request.post(`${data.base_url}/auth`, {
+test.beforeAll('Create token', async ({ request }) => {
+    const response = await request.post(data.auth_url, {
         headers: { 'Content-Type': 'application/json' },
         data: {
             username: data.login.username,
@@ -15,8 +15,8 @@ test.beforeAll('Create token for user', async ({ request }) => {
     expect(token).toBeTruthy();
 });
 
-test('Create token for user', async ({ request }) => {
-    const response = await request.post(`${data.base_url}/auth`, {
+test('Create token sucessfully', async ({ request }) => {
+    const response = await request.post(data.auth_url, {
         headers: { 'Content-Type': 'application/json' },
         data: {
             username: data.login.username,
@@ -30,8 +30,22 @@ test('Create token for user', async ({ request }) => {
     expect(responseBody.token.length).toBeGreaterThan(0);
 });
 
+test('Create token with invalid credentials', async ({ request }) => {
+    const response = await request.post(data.auth_url, {
+        headers: { 'Content-Type': 'application/json' },
+        data: {
+            username: data.login.invalid_username,
+            password: data.login.invalid_password,
+        },
+    });
+    expect(response.status()).toBe(200);
+    const responseBody = await response.json();
+    expect(responseBody).toHaveProperty('reason');
+    expect(responseBody.reason).toBe('Bad credentials');
+});
+
 test('Get booking ids', async ({ request }) => {
-    const response = await request.get(`${data.base_url}/booking`);
+    const response = await request.get(data.booking_url);
 
     expect(response.status()).toBe(200);
     const responseBody = await response.json();
@@ -42,7 +56,7 @@ test('Get booking ids', async ({ request }) => {
 test('Create booking', async ({ request }) => {
     let bookingid;
     try {
-        const response = await request.post(`${data.base_url}/booking`, {
+        const response = await request.post(data.booking_url, {
             headers: { Accept: 'application/json' },
             data: data.createBooking,
         });
@@ -55,7 +69,7 @@ test('Create booking', async ({ request }) => {
         expect(body.booking).toEqual(data.createBooking);
     } finally {
         if (bookingid) {
-            const cleanupResponse = await request.delete(`${data.base_url}/booking/${bookingid}`, {
+            const cleanupResponse = await request.delete(`${data.booking_url}/${bookingid}`, {
                 headers: { Cookie: `token=${token}` },
             });
             if (cleanupResponse.status() !== 201) {
@@ -65,11 +79,11 @@ test('Create booking', async ({ request }) => {
     }
 });
 
-test.describe('Required token and bookingids', () => {
+test.describe('Required bookingids', () => {
     let bookingid;
 
-    test.beforeEach('Create token and bookingid', async ({ request }) => {
-        const createResponse = await request.post(`${data.base_url}/booking`, {
+    test.beforeEach('Create bookingid', async ({ request }) => {
+        const createResponse = await request.post(data.booking_url, {
             headers: { Accept: 'application/json' },
             data: data.createBooking,
         });
@@ -78,8 +92,8 @@ test.describe('Required token and bookingids', () => {
         expect(bookingid).toBeTruthy();
     });
 
-    test('Get booking', async ({ request }) => {
-        const response = await request.get(`${data.base_url}/booking/${bookingid}`, {
+    test('Get booking id successfully', async ({ request }) => {
+        const response = await request.get(`${data.booking_url}/${bookingid}`, {
             headers: { Accept: 'application/json' },
         });
         expect(response.status()).toBe(200);
@@ -87,8 +101,16 @@ test.describe('Required token and bookingids', () => {
         expect(responseBody).toEqual(data.createBooking);
     });
 
+    test('Get booking id that nonexistent', async ({ request }) => {
+        const response = await request.get(`${data.booking_url}/-10`,{
+            headers: { Accept: 'application/json' }
+        });
+        expect(response.status()).toBe(404);
+        expect(await response.text()).toBe("Not Found");
+    });
+
     test('Update booking', async ({ request }) => {
-        const response = await request.put(`${data.base_url}/booking/${bookingid}`, {
+        const response = await request.put(`${data.booking_url}/${bookingid}`, {
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
@@ -103,29 +125,41 @@ test.describe('Required token and bookingids', () => {
     });
 
     test('Partial update booking', async ({ request }) => {
-        const response = await request.patch(`${data.base_url}/booking/${bookingid}`, {
+        const response = await request.patch(`${data.booking_url}/${bookingid}`, {
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
                 Cookie: `token=${token}`,
             },
-            data: {
-                firstname: 'James',
-            },
+            data: data.partialUpdateBooking,
         });
         expect(response.status()).toBe(200);
         const responseBody = await response.json();
-        expect(responseBody.firstname).toBe('James');
+        expect(responseBody).toEqual({
+            ...data.createBooking,
+            ...data.partialUpdateBooking,
+        });
     });
 
     test('Delete booking', async ({ request }) => {
-        const response = await request.delete(`${data.base_url}/booking/${bookingid}`, {
+        const response = await request.delete(`${data.booking_url}/${bookingid}`, {
             headers: { Cookie: `token=${token}` },
         });
         expect(response.status()).toBe(201);
-        const getBookingIdResponse = await request.get(`${data.base_url}/booking/${bookingid}`, {
+        const getBookingIdResponse = await request.get(`${data.booking_url}/${bookingid}`, {
             headers: { Cookie: `token=${token}` },
         });
         expect(getBookingIdResponse.status()).toBe(404);
+        bookingid = null;
+    });
+    test.afterEach('Delete booking', async ({ request }) => {
+        if (bookingid) {
+            const cleanupResponse = await request.delete(`${data.booking_url}/${bookingid}`, {
+                headers: { Cookie: `token=${token}` },
+            });
+            if (cleanupResponse.status() !== 201) {
+                console.error(`Failed to cleanup booking ${bookingid}. status: ${cleanupResponse.status()}`);
+            }
+        }
     });
 });
