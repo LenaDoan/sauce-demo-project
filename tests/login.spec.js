@@ -29,6 +29,16 @@ test.describe('Login with invalid credentials', () => {
             await expect(loginPage.errorMessage).toContainText(loginData.errorMessage.invalidInformation);
         });
     });
+
+    test('Login with invalid username', async({loginPage, loginData}) => {
+        await test.step('Submit invalid username', async () => {
+            await loginPage.loginAction(loginData.invalidUsername, loginData.validPassword);
+        });
+
+        await test.step('Verify the error message is displayed', async () => {
+            await expect(loginPage.errorMessage).toContainText(loginData.errorMessage.invalidInformation);
+        });
+    });
 });
 
 test.describe('Login with unusual account', () => {
@@ -39,6 +49,38 @@ test.describe('Login with unusual account', () => {
 
         await test.step('Verify the locked out message is displayed', async () => {
             await expect(loginPage.errorMessage).toContainText(loginData.errorMessage.lockedOut);
+        });
+    });
+});
+
+test.describe('Login with empty credentials', () => {
+    test('Show an error when login uses an empty username', async ({ loginPage, loginData }) => {
+        await test.step('Submit empty username', async () => {
+            await loginPage.loginAction("", loginData.validPassword);
+        });
+
+        await test.step('Verify the error message is displayed', async () => {
+            await expect(loginPage.errorMessage).toContainText(loginData.errorMessage.usernameRequired);
+        });
+    });
+
+    test('Show an error when login uses an empty password', async ({ loginPage, loginData }) => {
+        await test.step('Submit empty password', async () => {
+            await loginPage.loginAction(loginData.validUsername, "");
+        });
+
+        await test.step('Verify the error message is displayed', async () => {
+            await expect(loginPage.errorMessage).toContainText(loginData.errorMessage.passwordRequired);
+        });
+    });
+
+    test('Show an error when login uses an empty username and password', async ({ loginPage, loginData }) => {
+        await test.step('Submit empty username and password', async () => {
+            await loginPage.loginAction("", "");
+        });
+
+        await test.step('Verify the error message is displayed', async () => {
+            await expect(loginPage.errorMessage).toContainText(loginData.errorMessage.usernameRequired);
         });
     });
 });

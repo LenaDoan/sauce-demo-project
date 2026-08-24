@@ -8,7 +8,8 @@
     "lockOutUsername":"locked_out_user",
     "errorMessage": {
         "invalidInformation": "Username and password do not match",
-        "requiredField": "Required",
+        "usernameRequired": "Username is required",
+        "passwordRequired": "Password is required",
         "lockedOut": "locked out"
     }
 }
