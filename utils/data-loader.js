@@ -21,3 +21,7 @@ export function getLoginData() {
 export function getInventoryData() {
     return loadTestData('inventory-data');
 }
+
+export function getCartData() {
+    return loadTestData('cart-data');
+}
