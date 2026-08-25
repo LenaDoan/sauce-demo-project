@@ -106,15 +106,6 @@ export class InventoryPage extends BasePage {
         await expect(this.cartBadge).toHaveCount(0);
     }
 
-    async assertCartPageVisible() {
-        await expect(this.page).toHaveURL(/cart/);
-    }
-
-    async assertProductDetailPageVisible(productName) {
-        await expect(this.page).toHaveURL(/inventory-item/);
-        await expect(this.page.getByText(productName)).toBeVisible();
-    }
-
     async assertMenuOptionsVisible() {
         await expect(this.allItemsMenuOption).toBeVisible();
         await expect(this.aboutMenuOption).toBeVisible();

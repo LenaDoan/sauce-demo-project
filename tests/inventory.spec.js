@@ -59,33 +59,35 @@ test.describe('Verify UI of inventory page - Logged in', () => {
         });
     });
 
-    test('Navigate to the cart page from the cart icon', async ({ inventoryPage }) => {
+    test('Navigate to the cart page from the cart icon', async ({ inventoryPage, page }) => {
         await test.step('Open the cart', async () => {
             await inventoryPage.openCart();
         });
 
         await test.step('Verify the cart page is displayed', async () => {
-            await inventoryPage.assertCartPageVisible();
+            await expect(page).toHaveURL(/cart/);
         });
     });
 
-    test('Open a product detail page from the product name', async ({ inventoryPage, inventoryData }) => {
+    test('Open a product detail page from the product name', async ({ inventoryPage, inventoryData, page }) => {
         await test.step('Open the backpack detail page', async () => {
             await inventoryPage.openProductDetail(inventoryData.productName);
         });
 
         await test.step('Verify the product detail page is displayed', async () => {
-            await inventoryPage.assertProductDetailPageVisible(inventoryData.productName);
+            await expect(page).toHaveURL(/inventory-item/);
+            await expect(page.getByText(inventoryData.productName)).toBeVisible();
         });
     });
 
-    test('Open a product detail page from the product image', async ({ inventoryPage, inventoryData }) => {
+    test('Open a product detail page from the product image', async ({ inventoryPage, inventoryData, page }) => {
         await test.step('Open the backpack detail page from the image', async () => {
             await inventoryPage.openProductDetailFromImage();
         });
 
         await test.step('Verify the product detail page is displayed', async () => {
-            await inventoryPage.assertProductDetailPageVisible(inventoryData.productName);
+            await expect(page).toHaveURL(/inventory-item/);
+            await expect(page.getByText(inventoryData.productName)).toBeVisible();
         });
     });
 
