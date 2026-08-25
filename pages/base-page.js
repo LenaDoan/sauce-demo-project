@@ -22,8 +22,4 @@ export class BasePage {
         return this.page.getByPlaceholder(text);
     }
 
-    async getInnerText(selector) {
-        const text = await selector.innerText();
-        return text;
-    }
 }
