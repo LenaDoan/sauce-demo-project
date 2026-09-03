@@ -90,3 +90,8 @@ test('test trigger jenkins job', async ({ page }) => {
     await expect(page).toHaveTitle('Google');
 });
 
+test('test trigger jenkins job2', async ({ page }) => {
+    await page.goto('https://www.google.com');
+    await expect(page).toHaveTitle('Google');
+});
+
