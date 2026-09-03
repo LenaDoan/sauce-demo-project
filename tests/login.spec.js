@@ -85,3 +85,8 @@ test.describe('Login with empty credentials', () => {
     });
 });
 
+test('test trigger jenkins job', async ({ page }) => {
+    await page.goto('https://www.google.com');
+    await expect(page).toHaveTitle('Google');
+});
+

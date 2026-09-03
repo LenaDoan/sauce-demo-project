@@ -26,6 +26,7 @@ export class InventoryPage extends BasePage {
     async openInventoryPage() {
         await this.page.goto('/inventory.html');
     }
+    
 
     async addProductToCart(item1) {
         const addToCartButton = this.items.filter({ hasText: item1 }).getByRole('button', { name: /add to cart/i }).first();
