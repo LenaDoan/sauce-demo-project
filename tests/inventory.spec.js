@@ -7,23 +7,23 @@ test.describe('Verify UI of inventory page - Logged in', () => {
     });
 
     test('Verify the inventory page loads after a successful login', async ({ inventoryPage, page }) => {
-            await expect(page).toHaveURL(/inventory.html/);
-            await expect(inventoryPage.pageTitle).toBeVisible();
+        await expect(page).toHaveURL(/inventory.html/);
+        await expect(inventoryPage.pageTitle).toBeVisible();
     });
 
     test('Verify the number of products displays correctly', async ({ inventoryPage, inventoryData }) => {
         //Compare total number of Items on the inventory page
-            const actualCount = await inventoryPage.getInventoryItemCount();
-            await expect(actualCount).toBe(inventoryData.listNumber);
+        const actualCount = await inventoryPage.getInventoryItemCount();
+        await expect(actualCount).toBe(inventoryData.listNumber);
     });
 
     test('Verify a card includes the correct information', async ({ inventoryPage, inventoryData }) => {
-            const item = inventoryPage.getInventoryName(inventoryData.cardInformation.name);
-            await expect(item.card).toBeVisible();
-            await expect(item.name).toHaveText(inventoryData.cardInformation.name);
-            await expect(item.price).toHaveText(inventoryData.cardInformation.price);
-            await expect(item.description).toHaveText(inventoryData.cardInformation.description);
-            await expect(item.addToCartButton).toHaveText(/add to cart/i);
+        const item = inventoryPage.getInventoryName(inventoryData.cardInformation.name);
+        await expect(item.card).toBeVisible();
+        await expect(item.name).toHaveText(inventoryData.cardInformation.name);
+        await expect(item.price).toHaveText(inventoryData.cardInformation.price);
+        await expect(item.description).toHaveText(inventoryData.cardInformation.description);
+        await expect(item.addToCartButton).toHaveText(/add to cart/i);
     });
 
     test('Add one product to the cart from the inventory page', async ({ inventoryPage, inventoryData }) => {
@@ -111,6 +111,17 @@ test.describe('Verify UI of inventory page - Logged in', () => {
             await expect(page).toHaveURL('/');
         });
     });
+
+    test("Verify that user navigate to Dynamic Catalog - Lazy Load sucessfully", async ({ page, inventoryPage }) => {
+        await test.step('Open the menu', async () => {
+            await inventoryPage.openMenu();
+        });
+
+        await test.step('Clicking on Dynamic Catalog - Lazy Load', async () => {
+            await page.locator("#dynamic_catalog_sidebar_link").click();
+            await page.locator("#dynamic_catalog_lazy_load_link").click();
+        });
+    })
 
     test('Reset app state clears the cart', async ({ inventoryPage, inventoryData }) => {
         await test.step('Add a product and reset the app state', async () => {
