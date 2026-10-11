@@ -1,6 +1,6 @@
 import { test, expect } from "../fixtures/general-fixture.js";
 
-test.use({ storageState: { cookies: [], origins: [] } });
+test.use({storageState: {cookies: [], origins: []}});
 
 test.beforeEach('Navigate to the login page', async ({ page }) => {
     await page.goto('/');
@@ -30,7 +30,7 @@ test.describe('Login with invalid credentials', () => {
         });
     });
 
-    test('Login with invalid username', async ({ loginPage, loginData }) => {
+    test('Login with invalid username', async({loginPage, loginData}) => {
         await test.step('Submit invalid username', async () => {
             await loginPage.loginAction(loginData.invalidUsername, loginData.validPassword);
         });
@@ -83,5 +83,15 @@ test.describe('Login with empty credentials', () => {
             await expect(loginPage.errorMessage).toContainText(loginData.errorMessage.usernameRequired);
         });
     });
+});
+
+test('test trigger jenkins job', async ({ page }) => {
+    await page.goto('https://www.google.com');
+    await expect(page).toHaveTitle('Google');
+});
+
+test('test trigger jenkins job2', async ({ page }) => {
+    await page.goto('https://www.google.com');
+    await expect(page).toHaveTitle('Google');
 });
 
